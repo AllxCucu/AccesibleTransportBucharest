@@ -1,0 +1,45 @@
+<input type="text" class="form  -control" id="bus" required [(ngModel)]="busNumber" name="bus" (keyup.enter)="getBus()"
+    placeholder="Numar linie">
+<button type="submit" class="btn btn-primary" (click)="getBus()">Cauta autobuz</button>
+<div *ngIf="directionsView">
+    <h1 aria-live="assertive"> Selectati directia in care doriti sa mergeti cu {{bus.name}}</h1>
+    <button type="submit" class="btn btn-primary" (click)="getStations(0)">{{bus.direction_name_tur}} </button>
+    <button type="submit" class="btn btn-primary" (click)="getStations(1)">{{bus.direction_name_retur}}</button>
+</div>
+<div *ngIf="stopsView">
+    <h2 aria-live="assertive"> Toate statiile Pentru {{bus.name}}</h2>
+    <form class="wrap">
+        <div class="search">
+            <input class="searchTerm" type="text" name="filterTerm" placeholder="nume statie" [(ngModel)]="filterTerm"
+                (input)="filterStops(filterTerm)" />
+        </div>
+    </form>
+
+    <div *ngFor="let stop of stops">
+        <button type="submit" class="btn btn-primary" (click)="getRealTimeData(stop)">
+            {{stop.name}}
+        </button>
+    </div>
+</div>
+
+<div *ngIf="realTimeView" aria-live="assertive">
+    <h3>Urmeaza sa ajunga liniile </h3>
+    <p>In statia {{selectedStop.name}}, {{selectedStop.description}}</p>
+    <div *ngFor="let line of lines" aria-live="assertive">
+        {{line.name}} |
+        <div *ngIf="line.arriving_time != null">
+            {{line.arriving_time/60}} min
+        </div>
+        <div *ngIf="line.is_timetable; else notShow">
+            estimat
+        </div>
+        <ng-template #notShow>
+            real
+        </ng-template>
+
+    </div>
+    <button type="submit" class="btn btn-primary" (click)="getRealTimeData(selectedStop)">
+        actualizare date {{selectedStop.name}}
+    </button>
+
+</div>
