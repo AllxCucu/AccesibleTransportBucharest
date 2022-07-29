@@ -1,7 +1,7 @@
 // Stores the currently-being-typechecked object for error messages.
 let obj: any = null;
 export class LinesProxy2 {
-  public readonly lines: LinesEntityProxy2[] | null;
+  public readonly lines: LinesEntityProxy2[];
   public readonly ticket_info: TicketInfoProxy;
   public static Parse(d: string): LinesProxy2 {
     return LinesProxy2.Create(JSON.parse(d));

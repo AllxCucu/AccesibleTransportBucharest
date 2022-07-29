@@ -5,6 +5,7 @@ import { LinesProxy2 } from '../dtos/AllLines.dtos';
 import { BusProxy } from '../dtos/Bus.dto';
 import { LinesProxy } from '../dtos/Lines.dto';
 import { LinesEntityProxy } from '../dtos/LinesEntityProxy.dto';
+import { VehicleProxy } from '../dtos/Vehicle.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,9 @@ export class TbApiService {
 
   getRealTimeData(busId: number, stopId: number): Observable<LinesProxy[]> {
     return this.http.get<LinesProxy[]>(this.serverUrl + '/' + busId + '/stops/' + stopId);
+  }
+
+  GetVehicles(busId: string, direction: number): Observable<VehicleProxy[]> {
+    return this.http.get<VehicleProxy[]>(this.serverUrl + '/' + busId + '/vehicles/' + direction);
   }
 }

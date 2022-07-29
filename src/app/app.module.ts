@@ -20,7 +20,6 @@ import { SearchFilterPipe } from './search-filter.pipe';
     HttpClientModule,
     FormsModule,
     ToastrModule.forRoot()
-
   ],
   providers: [],
   bootstrap: [AppComponent]
