@@ -20,10 +20,10 @@
     "@angular/router": "^14.2.9",
     "haversine-distance": "^1.2.1",
     "ngx-google-analytics": "^14.0.0",
-    "ngx-toastr": "^15.0.0",
-    "rxjs": "~7.5.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "ngx-toastr": "^15.2.1",
+    "rxjs": "^7.5.7",
+    "tslib": "^2.4.1",
+    "zone.js": "^0.11.8"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.8",
@@ -31,7 +31,7 @@
     "@angular/compiler-cli": "^14.2.9",
     "@types/jasmine": "~4.0.0",
     "jasmine-core": "~4.2.0",
-    "karma": "~6.4.0",
+    "karma": "^6.4.1",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
