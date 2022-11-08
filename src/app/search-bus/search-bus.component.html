@@ -1,3 +1,12 @@
+<div *ngIf="savedData != null">
+    <h1> Ultimele statii verificate </h1>
+    <div *ngFor="let stop of savedData">
+        <button type="submit" class="btn btn-primary" (click)="getRealBySavedData(stop)">{{stop.bus.name}} -
+            {{stop.stop.name}} catre {{stop.directionName}}</button>
+    </div>
+    <h2> Cautare</h2>
+</div>
+
 <form class="wrap">
     <div class="search">
         <input class="searchTerm" type="text" name="filterTerm" placeholder="Numar linie" [(ngModel)]="busNumber"
@@ -11,7 +20,7 @@
 </div>
 
 <div *ngIf="directionsView">
-    <h1 onfocus aria-live="assertive"> Selectati directia in care doriti sa mergeti cu {{bus.name}}</h1>
+    <h2 onfocus aria-live="assertive"> Selectati directia in care doriti sa mergeti cu {{bus.name}}</h2>
     <button type="submit" class="btn btn-primary" (click)="getStations(0)">{{bus.direction_name_tur}} </button>
     <button type="submit" class="btn btn-primary" (click)="getStations(1)">{{bus.direction_name_retur}}</button>
 </div>
@@ -25,7 +34,7 @@
     </form>
 
     <div *ngFor="let stop of filteredStops">
-        <button type="submit" class="btn btn-primary" (click)="getRealTimeData(stop)">
+        <button type="submit" class="btn btn-primary" (click)="getRealTimeData(stop, true)">
             {{stop.name}}
         </button>
     </div>
@@ -48,7 +57,7 @@
             {{vehicleDistance}}m, {{vehicleNearStation}}.
         </div>
     </div>
-    <button type="submit" class="btn btn-primary" (click)="getRealTimeData(selectedStop)">
+    <button type="submit" class="btn btn-primary" (click)="getRealTimeData(selectedStop, false)">
         actualizare date {{selectedStop.name}}
     </button>
 

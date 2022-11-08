@@ -5,8 +5,10 @@ import { LinesEntityProxy2, LinesProxy2 } from '../dtos/AllLines.dtos';
 import { BusProxy } from '../dtos/Bus.dto';
 import { LinesProxy } from '../dtos/Lines.dto';
 import { LinesEntityProxy } from '../dtos/LinesEntityProxy.dto';
+import { SavedData } from '../dtos/saved-data.dto';
 import { StopsEntityProxy } from '../dtos/Stops.dto';
 import { VehicleProxy } from '../dtos/Vehicle.dto';
+import { LocalService } from '../services/local.service';
 import { TbApiService } from '../services/tb-api.service';
 
 @Component({
@@ -22,6 +24,8 @@ export class SearchBusComponent implements OnInit {
   busNumber: string = "";
   allLines: LinesProxy2;
   filteredLines: LinesEntityProxy2[] = [];
+  savedData: SavedData[] = [];
+  savedDirectionName: string = '';
   selectedStop: StopsEntityProxy;
   filterTerm: string = '';
   vehicles: VehicleProxy[] = [];
@@ -36,17 +40,17 @@ export class SearchBusComponent implements OnInit {
   realTimeView: boolean = false;
   searchView: boolean = true;
 
-  constructor(private api: TbApiService, private toastr: ToastrService) {
+  constructor(private api: TbApiService, private toastr: ToastrService, private localStore: LocalService) {
   }
 
   ngOnInit(): void {
-
     this.api.getAllBusses()
       .subscribe((data: LinesProxy2) => {
         this.allLines = data;
         this.filteredLines = this.allLines.lines;
       },
         (err) => this.toastr.error("Nu se poate face conexiunea cu serverul"));
+    this.savedData = this.localStore.getData();
   }
 
   public filterLines(value: String) {
@@ -105,9 +109,19 @@ export class SearchBusComponent implements OnInit {
     );
   }
 
-  public getRealTimeData(stop: StopsEntityProxy) {
-    if (this.selectedStop == null) {
-      this.selectedStop = stop;
+  public getRealBySavedData(stop: SavedData) {
+    this.direction = stop.direction;
+    this.bus = stop.bus;
+    this.directionName = stop.direction ? this.bus.direction_name_tur : this.bus.direction_name_retur;
+    this.getRealTimeData(stop.stop, false);
+  }
+
+  public getRealTimeData(stop: StopsEntityProxy, fromOnline: boolean) {
+    this.selectedStop = stop;
+    if (fromOnline) {
+      let dataForSave = new SavedData(this.direction, this.directionName, this.bus, stop);
+      this.localStore.saveData(dataForSave);
+      this.savedData = this.localStore.getData();
     }
     this.api.getRealTimeData(this.bus.id, stop.id)
       .subscribe((data: LinesProxy[]) => {
@@ -116,8 +130,9 @@ export class SearchBusComponent implements OnInit {
         // console.log(JSON.stringify(this.lines));
       });
     this.realTimeView = true;
+    this.directionsView = true;
     this.stopsView = false;
-
+    this.searchView = false;
     this.checkDistance();
   }
 
