@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as haversineDistance from 'haversine-distance';
 import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 import { LinesEntityProxy2, LinesProxy2 } from '../dtos/AllLines.dtos';
 import { BusProxy } from '../dtos/Bus.dto';
 import { LinesProxy } from '../dtos/Lines.dto';
@@ -10,6 +11,7 @@ import { StopsEntityProxy } from '../dtos/Stops.dto';
 import { VehicleProxy } from '../dtos/Vehicle.dto';
 import { LocalService } from '../services/local.service';
 import { TbApiService } from '../services/tb-api.service';
+import { HttpBackend } from '@angular/common/http';
 
 @Component({
   selector: 'app-search-bus',
@@ -17,22 +19,22 @@ import { TbApiService } from '../services/tb-api.service';
   styleUrls: ['./search-bus.component.css']
 })
 export class SearchBusComponent implements OnInit {
+  test: string = "";
   bus: BusProxy;
-  filteredStops: StopsEntityProxy[] = [];
   allStops: StopsEntityProxy[] = [];
+  filteredStops: StopsEntityProxy[] = [];
   lines: LinesEntityProxy[] = [];
   busNumber: string = "";
   allLines: LinesProxy2;
   filteredLines: LinesEntityProxy2[] = [];
   savedData: SavedData[] = [];
   savedDirectionName: string = '';
-  selectedStop: StopsEntityProxy;
+  selectedStop!: StopsEntityProxy;
   filterTerm: string = '';
   vehicles: VehicleProxy[] = [];
-  vehicleDistance: number = 0;
+  vehicleDistance: string = '0';
   direction: number = 0;
   directionName: string = '';
-  allStopsFromCity: StopsEntityProxy[] = [];
   vehicleNearStation: string = '';
 
   directionsView: boolean = false;
@@ -93,6 +95,7 @@ export class SearchBusComponent implements OnInit {
         this.allStops = data.stops != null ?
           data.stops : [];
         this.filteredStops = this.allStops;
+        // console.log(JSON.stringify(this.allStops));
       });
     this.api.GetVehicles(this.bus.id + '', this.direction)
       .subscribe((data: VehicleProxy[]) =>
@@ -113,11 +116,21 @@ export class SearchBusComponent implements OnInit {
     this.direction = stop.direction;
     this.bus = stop.bus;
     this.directionName = stop.direction ? this.bus.direction_name_tur : this.bus.direction_name_retur;
+    this.selectedStop = stop.stop;
+    this.getStations(this.direction);
     this.getRealTimeData(stop.stop, false);
   }
 
   public getRealTimeData(stop: StopsEntityProxy, fromOnline: boolean) {
     this.selectedStop = stop;
+    let test: string = "";
+    this.getPosition().subscribe((position) => {
+      this.api.getLocation(position.coords.latitude, position.coords.longitude)
+        .subscribe((location: any) => {
+          this.test = location[0].display_name;
+        });
+      //  position.coords.latitude + " longitudine " + position.coords.longitude;
+    });
     if (fromOnline) {
       let dataForSave = new SavedData(this.direction, this.directionName, this.bus, stop);
       this.localStore.saveData(dataForSave);
@@ -137,12 +150,14 @@ export class SearchBusComponent implements OnInit {
   }
 
   private checkDistance() {
-    this.computeVehicleDistance();
-    this.vehicleDistance = this.vehicleDistance | 0;
+    if (this.allStops.length == 0)
+      return;
+
     this.api.GetVehicles(this.bus.id + '', this.direction)
-      .subscribe((data: VehicleProxy[]) =>
-        this.vehicles = data,
-        (err) => this.toastr.error("Nu se poate face conexiunea cu serverul"));
+      .subscribe((data: VehicleProxy[]) => {
+        this.vehicles = data;
+        this.computeVehicleDistance();
+      }, (err) => this.toastr.error("Nu se poate face conexiunea cu serverul"));
   }
 
   private computeVehicleDistance() {
@@ -167,13 +182,11 @@ export class SearchBusComponent implements OnInit {
           lat: el.lat,
           lng: el.lng
         };
-        // console.log("vehicle - current" + haversineDistance(vehicleLocation, current) +
-        // "selected - current" + haversineDistance(selectedLocation, current));
         if ((haversineDistance(previousCurrent, selectedLocation) >= haversineDistance(vehicleLocation, selectedLocation)) &&
           (haversineDistance(vehicleLocation, selectedLocation) >= haversineDistance(current, selectedLocation))) {
-          // (haversineDistance(vehicleLocation, current) <= haversineDistance(selectedLocation, current))) {
+          // (haversineDistance(vehicleLocation, this.allStops[0]) <= haversineDistance(selectedLocation, this.allStops[0]))) {
           this.vehicleNearStation = tempStop.name;
-          this.vehicleDistance = haversineDistance(selectedLocation, vehicleLocation);
+          this.vehicleDistance = haversineDistance(selectedLocation, vehicleLocation).toFixed(0);
         }
       });
 
@@ -196,6 +209,16 @@ export class SearchBusComponent implements OnInit {
     this.realTimeView = false;
     this.filterTerm = "";
     this.vehicleNearStation = '';
-    this.vehicleDistance = 0;
+    this.vehicleDistance = '0';
+  }
+
+  getPosition(): Observable<any> {
+    return Observable.create((observer: any) => {
+      window.navigator.geolocation.getCurrentPosition(position => {
+        observer.next(position);
+        observer.complete();
+      },
+        error => observer.error(error));
+    });
   }
 }

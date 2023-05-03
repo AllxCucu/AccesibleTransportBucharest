@@ -42,6 +42,7 @@
 
 <div *ngIf="realTimeView" aria-live="assertive">
     <p align="center"> Selectat catre {{directionName}}</p>
+    <p> Locația ta: {{test}}</p>
     <h3 onfocus>sosesc liniile </h3>
     <p>In statia {{selectedStop.name}}, {{selectedStop.description}}</p>
     <div *ngFor="let line of lines" aria-live="assertive">
@@ -53,7 +54,7 @@
         </div>
         <ng-template #notShow> real.
         </ng-template>
-        <div *ngIf="line.id == bus.id && vehicleDistance != null && vehicleDistance != 0">
+        <div *ngIf="line.id == bus.id && vehicleDistance != null && vehicleDistance != '0'">
             {{vehicleDistance}}m, {{vehicleNearStation}}.
         </div>
     </div>

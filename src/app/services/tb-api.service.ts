@@ -32,4 +32,9 @@ export class TbApiService {
   GetVehicles(busId: string, direction: number): Observable<VehicleProxy[]> {
     return this.http.get<VehicleProxy[]>(this.serverUrl + '/' + busId + '/vehicles/' + direction);
   }
+
+  getLocation(lat: string, longitude: string): Observable<any> {
+    return this.http.get("https://nominatim.openstreetmap.org/search.php?q=" + lat + "," + longitude + "&polygon_geojson=1&format=json");
+  }
+
 }
