@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxGoogleAnalyticsModule } from 'ngx-google-analytics';
 import { ToastrModule } from 'ngx-toastr';
@@ -20,6 +20,7 @@ import { SearchFilterPipe } from './search-filter.pipe';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     ToastrModule.forRoot(),
     NgxGoogleAnalyticsModule.forRoot('G-Z4WLLDW1C7')
   ],

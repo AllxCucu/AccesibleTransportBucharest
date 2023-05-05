@@ -13,7 +13,7 @@
             (input)="filterLines(busNumber)" />
     </div>
 </form>
-<div *ngIf="searchView">
+<div *ngIf="searchView" aria-live="assertive">
     <div *ngFor="let line of filteredLines">
         <button type="submit" class="btn btn-primary" (click)="getBus(line.name)">{{line.name}}</button>
     </div>
@@ -43,20 +43,11 @@
 <div *ngIf="realTimeView" aria-live="assertive">
     <p align="center"> Selectat catre {{directionName}}</p>
     <p> Locația ta: {{test}}</p>
+    <p> Distanta pana la statie: {{distanceToStation}} </p>
     <h3 onfocus>sosesc liniile </h3>
     <p>In statia {{selectedStop.name}}, {{selectedStop.description}}</p>
-    <div *ngFor="let line of lines" aria-live="assertive">
-        {{line.name}} |
-        <div *ngIf="line.arriving_time != null">
-            {{line.arriving_time/60}} min,
-        </div>
-        <div *ngIf="line.is_timetable; else notShow"> estimat.
-        </div>
-        <ng-template #notShow> real.
-        </ng-template>
-        <div *ngIf="line.id == bus.id && vehicleDistance != null && vehicleDistance != '0'">
-            {{vehicleDistance}}m, {{vehicleNearStation}}.
-        </div>
+    <div aria-live="assertive">
+    {{linesRealTyme}}
     </div>
     <button type="submit" class="btn btn-primary" (click)="getRealTimeData(selectedStop, false)">
         actualizare date {{selectedStop.name}}

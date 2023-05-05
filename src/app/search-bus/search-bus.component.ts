@@ -36,6 +36,8 @@ export class SearchBusComponent implements OnInit {
   direction: number = 0;
   directionName: string = '';
   vehicleNearStation: string = '';
+  linesRealTyme: string = '';
+  distanceToStation: string = '';
 
   directionsView: boolean = false;
   stopsView: boolean = false;
@@ -129,6 +131,13 @@ export class SearchBusComponent implements OnInit {
         .subscribe((location: any) => {
           this.test = location[0].display_name;
         });
+      this.distanceToStation = haversineDistance({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }, {
+        lat: this.selectedStop.lat,
+        lng: this.selectedStop.lng
+      }).toFixed(0);
       //  position.coords.latitude + " longitudine " + position.coords.longitude;
     });
     if (fromOnline) {
@@ -140,6 +149,17 @@ export class SearchBusComponent implements OnInit {
       .subscribe((data: LinesProxy[]) => {
         this.lines = data[0].lines != null ?
           data[0].lines : this.lines;
+
+        this.linesRealTyme = '';
+        this.lines.forEach((value) => {
+          this.linesRealTyme += value.name + ' | ' + value.arriving_time / 60 + ' min';
+          if (value.is_timetable) {
+            this.linesRealTyme += ' estimat';
+          } else {
+            this.linesRealTyme += ' real';
+          }
+          this.linesRealTyme += '\r';
+        });
         // console.log(JSON.stringify(this.lines));
       });
     this.realTimeView = true;
