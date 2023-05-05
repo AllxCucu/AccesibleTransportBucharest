@@ -36,6 +36,7 @@ export class SearchBusComponent implements OnInit {
   direction: number = 0;
   directionName: string = '';
   vehicleNearStation: string = '';
+  distanceToStation: string = '';
 
   directionsView: boolean = false;
   stopsView: boolean = false;
@@ -129,6 +130,13 @@ export class SearchBusComponent implements OnInit {
         .subscribe((location: any) => {
           this.test = location[0].display_name;
         });
+      this.distanceToStation = haversineDistance({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      }, {
+        lat: this.selectedStop.lat,
+        lng: this.selectedStop.lng
+      }).toFixed(0);
       //  position.coords.latitude + " longitudine " + position.coords.longitude;
     });
     if (fromOnline) {

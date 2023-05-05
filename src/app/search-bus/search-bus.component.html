@@ -42,7 +42,12 @@
 
 <div *ngIf="realTimeView" aria-live="assertive">
     <p align="center"> Selectat catre {{directionName}}</p>
-    <p> Locația ta: {{test}}</p>
+    <div *ngIf="test != ''">
+        <p> Locația ta: {{test}}</p>
+    </div>
+    <div *ngIf="distanceToStation != ''">
+        <p> Distanța până la stație: {{ distanceToStation }} </p>
+    </div>
     <h3 onfocus>sosesc liniile </h3>
     <p>In statia {{selectedStop.name}}, {{selectedStop.description}}</p>
     <div *ngFor="let line of lines" aria-live="assertive">
